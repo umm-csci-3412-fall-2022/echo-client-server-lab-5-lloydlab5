@@ -25,7 +25,8 @@ public class EchoServer {
 
         // Grab information from the client and send it back
         String line;      
-        while((line = clientReader.readLine()) != null) {
+        while(!isClosed(clientReader)) {
+          line = clientReader.readLine();
           writer.println(line);
         }
 
@@ -38,6 +39,19 @@ public class EchoServer {
     } catch (IOException ioe) {
       System.out.println("We caught an unexpected exception");
       System.err.println(ioe);
+    }
+  }
+
+  public static boolean isClosed(BufferedReader reader) {
+    try {
+      reader.mark(1);
+      boolean result = (reader.read() == -1);
+      reader.reset();
+      return result;  
+    }
+    catch(IOException ioe) {
+      System.out.println("We caught an ioe in the isClosed");
+      return true;
     }
   }
 }
