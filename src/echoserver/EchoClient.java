@@ -24,21 +24,20 @@ public class EchoClient {
       OutputStream toServer = socket.getOutputStream();
 
       int keyboardInt;
+      int recievedFromServer;
       // Send information to the server      
       while((keyboardInt = keyboardInput.read()) != -1) {
         toServer.write(keyboardInt);
-        int recievedFromServer = input.read();
+        recievedFromServer = input.read();
         System.out.write(recievedFromServer);
-        if((char) recievedFromServer == '\n') {
-          toServer.flush();
-        }
       }
       // Tell the server when we're done reading
+      toServer.flush();
+      System.out.flush();
       socket.shutdownOutput();
       // Wait for the server to shutdown it's responses
-      while(input.available() != 0) {
-        char c = (char) input.read();
-        System.out.print(c);
+      while((recievedFromServer = input.read()) != -1) {
+        System.out.write(recievedFromServer);
       }
       // Then close the socket
       socket.close();

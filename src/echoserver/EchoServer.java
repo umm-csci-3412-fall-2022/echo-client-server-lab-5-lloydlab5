@@ -25,10 +25,8 @@ public class EchoServer {
         while((inputInt = input.read()) != -1) {
           output.write(inputInt);
           System.out.write(inputInt);
-          if((char)inputInt == '\n') {
-            output.flush();
-          }
         } 
+        output.flush();
 
         // Close the client socket and reader since we're done
         client.close();
