@@ -24,7 +24,7 @@ public class EchoServer {
         int inputInt;
         while((inputInt = input.read()) != -1) {
           output.write(inputInt);
-          System.out.print((char) inputInt);
+          System.out.write(inputInt);
           if((char)inputInt == '\n') {
             output.flush();
           }

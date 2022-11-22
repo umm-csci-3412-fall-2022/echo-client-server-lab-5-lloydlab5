@@ -21,16 +21,16 @@ public class EchoClient {
       // Get the input stream so we can read from that socket
       InputStream keyboardInput = System.in;
       InputStream input = socket.getInputStream();
-      OutputStream output = socket.getOutputStream();
+      OutputStream toServer = socket.getOutputStream();
 
+      int keyboardInt;
       // Send information to the server      
-      while(keyboardInput.available() != 0) {
-        int keyboardInt = keyboardInput.read();
-        output.write(keyboardInt);
-        char c = (char) input.read();
-        System.out.print(c);
-        if((char)c == '\n') {
-          output.flush();
+      while((keyboardInt = keyboardInput.read()) != -1) {
+        toServer.write(keyboardInt);
+        int recievedFromServer = input.read();
+        System.out.write(recievedFromServer);
+        if((char) recievedFromServer == '\n') {
+          toServer.flush();
         }
       }
       // Tell the server when we're done reading
