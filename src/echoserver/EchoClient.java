@@ -19,25 +19,30 @@ public class EchoClient {
       Socket socket = new Socket(server, portNumber);
 
       // Get the input stream so we can read from that socket
+      InputStream keyboardInput = System.in;
       InputStream input = socket.getInputStream();
-      PrintWriter serverWriter = new PrintWriter(socket.getOutputStream(), true);
-      BufferedReader serverReader = new BufferedReader(new InputStreamReader(input));
-      BufferedReader keyboardReader = new BufferedReader(new InputStreamReader(System.in));
+      OutputStream output = socket.getOutputStream();
 
-      // Send information to the server
-      String line;      
-      while((line = keyboardReader.readLine()) != null) {
-        serverWriter.println(line);
-        String recieved = serverReader.readLine();
-        System.out.println(recieved);
-      } 
-
-      // Close the socket when we're done reading from it
-      socket.shutdownInput();
+      // Send information to the server      
+      while(keyboardInput.available() != 0) {
+        int keyboardInt = keyboardInput.read();
+        output.write(keyboardInt);
+        char c = (char) input.read();
+        System.out.print(c);
+        if((char)c == '\n') {
+          output.flush();
+        }
+      }
+      // Tell the server when we're done reading
       socket.shutdownOutput();
-      serverReader.close();
-      serverWriter.close();
-      keyboardReader.close();
+      // Wait for the server to shutdown it's responses
+      while(input.available() != 0) {
+        char c = (char) input.read();
+        System.out.print(c);
+      }
+      // Then close the socket
+      socket.close();
+
 
     // Provide some minimal error handling.
     } catch (ConnectException ce) {

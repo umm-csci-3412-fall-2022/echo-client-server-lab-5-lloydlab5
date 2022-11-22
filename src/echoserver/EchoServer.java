@@ -16,42 +16,27 @@ public class EchoServer {
         Socket client = sock.accept();
         System.out.println("Connected:");
 
-        // Construct a reader to grab info sent to the server
-        BufferedReader clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        // Construct input stream for info sent to server
+        InputStream input = client.getInputStream();
+        OutputStream output = client.getOutputStream();
 
-        // Construct a writer so we can write to the socket, thereby
-        // sending something back to the client.
-        PrintWriter writer = new PrintWriter(client.getOutputStream(), true);
+        // Grab information from the stream and send it back
+        int inputInt;
+        while((inputInt = input.read()) != -1) {
+          output.write(inputInt);
+          System.out.print((char) inputInt);
+          if((char)inputInt == '\n') {
+            output.flush();
+          }
+        } 
 
-        // Grab information from the client and send it back
-        String line;      
-        while(!isClosed(clientReader)) {
-          line = clientReader.readLine();
-          writer.println(line);
-        }
-
-        // Close the client socket and reader since we're done.
-        writer.close();
-        clientReader.close();
+        // Close the client socket and reader since we're done
         client.close();
       }
     // *Very* minimal error handling.
     } catch (IOException ioe) {
       System.out.println("We caught an unexpected exception");
       System.err.println(ioe);
-    }
-  }
-
-  public static boolean isClosed(BufferedReader reader) {
-    try {
-      reader.mark(1);
-      boolean result = (reader.read() == -1);
-      reader.reset();
-      return result;  
-    }
-    catch(IOException ioe) {
-      System.out.println("We caught an ioe in the isClosed");
-      return true;
     }
   }
 }
